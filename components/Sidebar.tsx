@@ -18,11 +18,14 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
 
     return (
         <div className="col-span-1 p-5 overflow-auto">
-            <h1>3D Drawer Layout Generator</h1>
-            <p>
+            <h1 className="font-bold text-lg">
+                Parametric Drawer Inserts Generator
+            </h1>
+            <p className="text-sm max-w-[75%]">
                 Adjust the drawer dimensions and grid spacing using the sliders.
+                Click the download button to export the STL file.
             </p>
-            <div className="mt-5 grid grid-cols-1 gap-5">
+            <div className="mt-8 grid grid-cols-1 gap-5">
                 <div className="grid grid-cols-1 gap-2">
                     <Label htmlFor="width">Width: {width} mm</Label>
                     <Slider

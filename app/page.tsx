@@ -66,7 +66,6 @@ export default function Home() {
             const sectionWidth = width / (xSections + 1);
             const sectionDepth = depth / (ySections + 1);
 
-            // Create vertical bars
             for (let i = 1; i <= xSections; i++) {
                 const geometry = new THREE.BoxGeometry(
                     wallThickness,
@@ -78,7 +77,6 @@ export default function Home() {
                 bar.position.x = -width / 2 + i * sectionWidth;
                 gridRef.current.add(bar);
 
-                // Add edges
                 const edges = new THREE.EdgesGeometry(geometry);
                 const lineMaterial = new THREE.LineBasicMaterial({
                     color: 0xffffff,
@@ -88,7 +86,6 @@ export default function Home() {
                 gridRef.current.add(line);
             }
 
-            // Create horizontal bars
             for (let j = 1; j <= ySections; j++) {
                 const geometry = new THREE.BoxGeometry(
                     width,
@@ -100,7 +97,6 @@ export default function Home() {
                 bar.position.z = -depth / 2 + j * sectionDepth;
                 gridRef.current.add(bar);
 
-                // Add edges
                 const edges = new THREE.EdgesGeometry(geometry);
                 const lineMaterial = new THREE.LineBasicMaterial({
                     color: 0xffffff,
