@@ -72,11 +72,10 @@ export default function Home() {
             gridRef.current.clear();
             drawerRef.current.clear();
 
-            const sectionWidth = width / (xSections + 1);
-            const sectionDepth = depth / (ySections + 1);
+            const sectionWidth = width / xSections;
+            const sectionDepth = depth / ySections;
 
-            // Add the grid bars
-            for (let i = 1; i <= xSections; i++) {
+            for (let i = 1; i < xSections; i++) {
                 const geometry = new THREE.BoxGeometry(
                     wallThickness,
                     height,
@@ -96,7 +95,7 @@ export default function Home() {
                 gridRef.current.add(line);
             }
 
-            for (let j = 1; j <= ySections; j++) {
+            for (let j = 1; j < ySections; j++) {
                 const geometry = new THREE.BoxGeometry(
                     width,
                     height,
@@ -116,7 +115,6 @@ export default function Home() {
                 gridRef.current.add(line);
             }
 
-            // Add the drawer model
             addDrawerModel(drawerRef.current, width, height, depth);
         }
     }, [width, height, depth, xSections, ySections, wallThickness, color]);
@@ -129,6 +127,9 @@ export default function Home() {
     ) => {
         const drawerThickness = 5;
         const drawerMaterial = new THREE.MeshBasicMaterial({ color: 0xd3d3d3 });
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xffffff,
+        });
 
         const bottomGeometry = new THREE.BoxGeometry(
             width + drawerThickness * 2,
@@ -180,14 +181,73 @@ export default function Home() {
         drawerGroup.add(frontSide);
 
         // Handle
-        const handleGeometry = new THREE.BoxGeometry(
-            width * 0.3,
-            drawerThickness,
-            drawerThickness * 2
+        const handleMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
+        const handleRadius = drawerThickness / 3;
+        const handleLength = width * 0.4; // Length of the handle bar
+        const handleDepthOffset = drawerThickness * 2;
+
+        const middleBarGeometry = new THREE.CylinderGeometry(
+            handleRadius,
+            handleRadius,
+            handleLength,
+            16
         );
-        const handle = new THREE.Mesh(handleGeometry, drawerMaterial);
-        handle.position.set(0, 0, depth / 2 + drawerThickness * 2);
-        drawerGroup.add(handle);
+        const middleBar = new THREE.Mesh(middleBarGeometry, handleMaterial);
+        middleBar.rotation.z = Math.PI / 2;
+        middleBar.position.set(0, 0, depth / 2 + handleDepthOffset);
+        drawerGroup.add(middleBar);
+
+        const leftBarGeometry = new THREE.CylinderGeometry(
+            handleRadius,
+            handleRadius,
+            handleDepthOffset,
+            16
+        );
+        const leftBar = new THREE.Mesh(leftBarGeometry, handleMaterial);
+        leftBar.position.set(
+            -handleLength / 2,
+            0,
+            depth / 2 + handleDepthOffset / 2
+        );
+        leftBar.rotation.x = Math.PI / 2;
+        drawerGroup.add(leftBar);
+
+        const rightBarGeometry = new THREE.CylinderGeometry(
+            handleRadius,
+            handleRadius,
+            handleDepthOffset,
+            16
+        );
+        const rightBar = new THREE.Mesh(rightBarGeometry, handleMaterial);
+        rightBar.position.set(
+            handleLength / 2,
+            0,
+            depth / 2 + handleDepthOffset / 2
+        );
+        rightBar.rotation.x = Math.PI / 2;
+        drawerGroup.add(rightBar);
+
+        const bendSphereGeometry = new THREE.SphereGeometry(
+            handleRadius,
+            16,
+            16
+        );
+
+        const leftBend = new THREE.Mesh(bendSphereGeometry, handleMaterial);
+        leftBend.position.set(
+            -handleLength / 2,
+            0,
+            depth / 2 + handleDepthOffset
+        );
+        drawerGroup.add(leftBend);
+
+        const rightBend = new THREE.Mesh(bendSphereGeometry, handleMaterial);
+        rightBend.position.set(
+            handleLength / 2,
+            0,
+            depth / 2 + handleDepthOffset
+        );
+        drawerGroup.add(rightBend);
 
         // Edges
         const frontEdges = new THREE.EdgesGeometry(frontGeometry);
@@ -195,33 +255,29 @@ export default function Home() {
         const leftEdges = new THREE.EdgesGeometry(leftGeometry);
         const rightEdges = new THREE.EdgesGeometry(rightGeometry);
         const backEdges = new THREE.EdgesGeometry(backGeometry);
-        const handleEdges = new THREE.EdgesGeometry(handleGeometry);
-
-        const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0xffffff,
-        });
+        //const handleEdges = new THREE.EdgesGeometry(handleGeometry);
 
         const frontLine = new THREE.LineSegments(frontEdges, lineMaterial);
         const bottomLine = new THREE.LineSegments(bottomEdges, lineMaterial);
         const leftLine = new THREE.LineSegments(leftEdges, lineMaterial);
         const rightLine = new THREE.LineSegments(rightEdges, lineMaterial);
         const backLine = new THREE.LineSegments(backEdges, lineMaterial);
-        const handleLine = new THREE.LineSegments(handleEdges, lineMaterial);
+        //const handleLine = new THREE.LineSegments(handleEdges, lineMaterial);
 
         frontLine.position.copy(frontSide.position);
         bottomLine.position.copy(bottom.position);
         leftLine.position.copy(leftSide.position);
         rightLine.position.copy(rightSide.position);
         backLine.position.copy(backSide.position);
-        handleLine.position.copy(handle.position);
+        //handleLine.position.copy(handle.position);
 
         drawerGroup.add(
             frontLine,
             bottomLine,
             leftLine,
             rightLine,
-            backLine,
-            handleLine
+            backLine
+            //handleLine
         );
     };
 
