@@ -8,23 +8,24 @@ export const createDrawerModel = (
     depth: number
 ) => {
     const drawerThickness = 5;
-    const drawerMaterial = new THREE.MeshBasicMaterial({ color: 0xd3d3d3 });
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const drawerMaterial = new THREE.MeshBasicMaterial({ color: 0x5C4033 });
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 
     const bottomGeometry = new THREE.BoxGeometry(
         width + drawerThickness * 2,
         drawerThickness,
-        depth + drawerThickness * 2
+        depth + drawerThickness
     );
     const bottom = new THREE.Mesh(bottomGeometry, drawerMaterial);
-    bottom.position.y = -height / 2 - drawerThickness / 2;
+    bottom.position.y = -height + drawerThickness / 2;
+    bottom.position.z = -drawerThickness / 2;
     drawerGroup.add(bottom);
 
     // Left side
     const leftGeometry = new THREE.BoxGeometry(
         drawerThickness,
-        height + drawerThickness,
-        depth + drawerThickness * 2
+        height,
+        depth
     );
     const leftSide = new THREE.Mesh(leftGeometry, drawerMaterial);
     leftSide.position.x = -width / 2 - drawerThickness / 2;
@@ -33,8 +34,8 @@ export const createDrawerModel = (
     // Right side
     const rightGeometry = new THREE.BoxGeometry(
         drawerThickness,
-        height + drawerThickness,
-        depth + drawerThickness * 2
+        height,
+        depth
     );
     const rightSide = new THREE.Mesh(rightGeometry, drawerMaterial);
     rightSide.position.x = width / 2 + drawerThickness / 2;
@@ -43,7 +44,7 @@ export const createDrawerModel = (
     // Back side
     const backGeometry = new THREE.BoxGeometry(
         width + drawerThickness * 2,
-        height + drawerThickness,
+        height,
         drawerThickness
     );
     const backSide = new THREE.Mesh(backGeometry, drawerMaterial);
@@ -52,8 +53,8 @@ export const createDrawerModel = (
 
     // Front side
     const frontGeometry = new THREE.BoxGeometry(
-        width + drawerThickness * 2,
-        height + drawerThickness,
+        width + drawerThickness * 4,
+        height + drawerThickness * 3,
         drawerThickness
     );
     const frontSide = new THREE.Mesh(frontGeometry, drawerMaterial);
@@ -74,7 +75,7 @@ export const createDrawerModel = (
     );
     const middleBar = new THREE.Mesh(middleBarGeometry, handleMaterial);
     middleBar.rotation.z = Math.PI / 2;
-    middleBar.position.set(0, 0, depth / 2 + handleDepthOffset);
+    middleBar.position.set(0, 0, depth / 2 + drawerThickness + handleDepthOffset);
     drawerGroup.add(middleBar);
 
     const leftBarGeometry = new THREE.CylinderGeometry(
@@ -87,7 +88,7 @@ export const createDrawerModel = (
     leftBar.position.set(
         -handleLength / 2,
         0,
-        depth / 2 + handleDepthOffset / 2
+        depth / 2 + handleDepthOffset / 2 + drawerThickness
     );
     leftBar.rotation.x = Math.PI / 2;
     drawerGroup.add(leftBar);
@@ -102,7 +103,7 @@ export const createDrawerModel = (
     rightBar.position.set(
         handleLength / 2,
         0,
-        depth / 2 + handleDepthOffset / 2
+        depth / 2 + handleDepthOffset / 2 + drawerThickness
     );
     rightBar.rotation.x = Math.PI / 2;
     drawerGroup.add(rightBar);
@@ -117,7 +118,7 @@ export const createDrawerModel = (
     leftBend.position.set(
         -handleLength / 2,
         0,
-        depth / 2 + handleDepthOffset
+        depth / 2 + handleDepthOffset + drawerThickness
     );
     drawerGroup.add(leftBend);
 
@@ -125,7 +126,7 @@ export const createDrawerModel = (
     rightBend.position.set(
         handleLength / 2,
         0,
-        depth / 2 + handleDepthOffset
+        depth / 2 + handleDepthOffset + drawerThickness
     );
     drawerGroup.add(rightBend);
 
