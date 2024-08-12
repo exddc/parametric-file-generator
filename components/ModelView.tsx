@@ -9,19 +9,25 @@ import { createDrawerModel } from '@/lib/createDrawerModel';
 import { createGridModel } from '@/lib/createGridModel';
 
 interface ModelViewProps {
-    gridRef: React.RefObject<THREE.Group | null>;
+    gridRef: React.RefObject<THREE.Group>;
 }
 
 const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
     const mountRef = useRef<HTMLDivElement | null>(null);
     const { width, height, depth, xSections, ySections, wallThickness, color } =
         useStore();
-    const drawerRef = useRef<THREE.Group | null>(null);
-    const sceneRef = useRef<THREE.Scene | null>(null);
+
+    const drawerRef = useRef<THREE.Group>(new THREE.Group());
+    const sceneRef = useRef<THREE.Scene>(new THREE.Scene());
 
     useEffect(() => {
-        const scene = new THREE.Scene();
-        sceneRef.current = scene;
+        const scene = sceneRef.current;
+
+        if (!gridRef.current) {
+            console.error('gridRef.current is not initialized');
+            return;
+        }
+
         const camera = new THREE.PerspectiveCamera(75, 2 / 3, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({
             alpha: true,
@@ -34,20 +40,15 @@ const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
             mountRef.current.appendChild(renderer.domElement);
         }
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(1, 1, 1).normalize();
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(2, 2, 2).normalize();
         scene.add(directionalLight);
 
         const ambientLight = new THREE.AmbientLight(0x404040);
         scene.add(ambientLight);
 
-        const gridGroup = new THREE.Group();
-        gridRef.current = gridGroup;
-        scene.add(gridGroup);
-
-        const drawerGroup = new THREE.Group();
-        drawerRef.current = drawerGroup;
-        scene.add(drawerGroup);
+        scene.add(gridRef.current);
+        scene.add(drawerRef.current);
 
         camera.position.set(200, 200, 200);
         camera.lookAt(scene.position);
@@ -68,11 +69,10 @@ const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
                 mountRef.current.removeChild(renderer.domElement);
             }
         };
-    }, []);
+    }, [gridRef, drawerRef]);
 
     useEffect(() => {
         if (gridRef.current && drawerRef.current) {
-            const scene = sceneRef.current;
             gridRef.current.clear();
             drawerRef.current.clear();
 

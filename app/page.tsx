@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/resizable';
 
 export default function Home() {
-    const gridRef = useRef<THREE.Group | null>(null);
+    const gridRef = useRef<THREE.Group>(new THREE.Group());
 
     const exportSTL = () => {
         if (gridRef.current) {
@@ -35,7 +35,7 @@ export default function Home() {
                     <Sidebar exportSTL={exportSTL} />
                 </ResizablePanel>
                 <ResizableHandle withHandle />
-                <ResizablePanel>
+                <ResizablePanel defaultSize={75}>
                     <ModelView gridRef={gridRef} />
                 </ResizablePanel>
             </ResizablePanelGroup>
