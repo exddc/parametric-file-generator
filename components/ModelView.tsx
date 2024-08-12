@@ -34,6 +34,13 @@ const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
             mountRef.current.appendChild(renderer.domElement);
         }
 
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(1, 1, 1).normalize();
+        scene.add(directionalLight);
+
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+
         const gridGroup = new THREE.Group();
         gridRef.current = gridGroup;
         scene.add(gridGroup);

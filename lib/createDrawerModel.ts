@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 
 export const createDrawerModel = (
@@ -8,7 +7,11 @@ export const createDrawerModel = (
     depth: number
 ) => {
     const drawerThickness = 5;
-    const drawerMaterial = new THREE.MeshBasicMaterial({ color: 0x5C4033 });
+    const drawerMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x967969, 
+        roughness: 0.75, 
+        metalness: 0 
+    });
     const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 
     const bottomGeometry = new THREE.BoxGeometry(
@@ -62,9 +65,13 @@ export const createDrawerModel = (
     drawerGroup.add(frontSide);
 
     // Handle
-    const handleMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
+    const handleMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xffffff, 
+        roughness: 0, 
+        metalness: 0.75,  
+    });
     const handleRadius = drawerThickness / 3;
-    const handleLength = width * 0.4; // Length of the handle bar
+    const handleLength = width * 0.4;
     const handleDepthOffset = drawerThickness * 2;
 
     const middleBarGeometry = new THREE.CylinderGeometry(

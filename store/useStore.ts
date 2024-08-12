@@ -18,7 +18,7 @@ const useStore = create<DrawerParams>((set) => ({
   xSections: 2,
   ySections: 2,
   wallThickness: 1,
-  color: '#000000',
+  color: '#666161',
   setParams: (params) => set((state) => ({ ...state, ...params })),
 }));
 
