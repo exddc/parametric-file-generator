@@ -18,29 +18,43 @@ export const createGridModel = (
         roughness: 1,
         metalness: 1,
     });
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x606060});
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x606060 });
 
     for (let i = 1; i < xSections; i++) {
-        const geometry = new THREE.BoxGeometry(wallThickness, height, depth);
-        const bar = new THREE.Mesh(geometry, material);
-        bar.position.x = -width / 2 + i * sectionWidth;
-        gridGroup.add(bar);
+        for (let j = 0; j < ySections; j++) {
+            const geometry = new THREE.BoxGeometry(
+                wallThickness,
+                height,
+                sectionDepth - wallThickness
+            );
+            const bar = new THREE.Mesh(geometry, material);
+            bar.position.x = -width / 2 + i * sectionWidth;
+            bar.position.z = -depth / 2 + j * sectionDepth + sectionDepth / 2;
+            gridGroup.add(bar);
 
-        const edges = new THREE.EdgesGeometry(geometry);
-        const line = new THREE.LineSegments(edges, lineMaterial);
-        line.position.copy(bar.position);
-        gridGroup.add(line);
+            const edges = new THREE.EdgesGeometry(geometry);
+            const line = new THREE.LineSegments(edges, lineMaterial);
+            line.position.copy(bar.position);
+            gridGroup.add(line);
+        }
     }
 
     for (let j = 1; j < ySections; j++) {
-        const geometry = new THREE.BoxGeometry(width, height, wallThickness);
-        const bar = new THREE.Mesh(geometry, material);
-        bar.position.z = -depth / 2 + j * sectionDepth;
-        gridGroup.add(bar);
+        for (let i = 0; i < xSections; i++) {
+            const geometry = new THREE.BoxGeometry(
+                sectionWidth - wallThickness, 
+                height,
+                wallThickness
+            );
+            const bar = new THREE.Mesh(geometry, material);
+            bar.position.z = -depth / 2 + j * sectionDepth;
+            bar.position.x = -width / 2 + i * sectionWidth + sectionWidth / 2;
+            gridGroup.add(bar);
 
-        const edges = new THREE.EdgesGeometry(geometry);
-        const line = new THREE.LineSegments(edges, lineMaterial);
-        line.position.copy(bar.position);
-        gridGroup.add(line);
+            const edges = new THREE.EdgesGeometry(geometry);
+            const line = new THREE.LineSegments(edges, lineMaterial);
+            line.position.copy(bar.position);
+            gridGroup.add(line);
+        }
     }
 };
