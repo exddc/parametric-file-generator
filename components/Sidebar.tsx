@@ -3,6 +3,7 @@ import useStore from '@/store/useStore';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
     const {

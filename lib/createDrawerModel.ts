@@ -163,4 +163,7 @@ export const createDrawerModel = (
         rightLine,
         backLine
     );
+
+    drawerGroup.position.x = 0;
+    drawerGroup.position.z = 0;
 };
