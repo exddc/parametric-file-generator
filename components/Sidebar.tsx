@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { createGridMatrix } from '@/lib/createGridMatrix';
 
 const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
     const {
@@ -16,6 +17,16 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
         color,
         setParams,
     } = useStore();
+
+    const updateGridMatrix = (newXSections: number, newYSections: number) => {
+        const newGridMatrix = createGridMatrix(
+            newXSections,
+            newYSections,
+            width,
+            depth
+        );
+        setParams({ gridMatrix: newGridMatrix });
+    };
 
     return (
         <div className="col-span-1 p-5 overflow-auto">
@@ -35,9 +46,10 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
                         max={500}
                         min={2}
                         step={1}
-                        onValueChange={(value) =>
-                            setParams({ width: value[0] })
-                        }
+                        onValueChange={(value) => {
+                            setParams({ width: value[0] });
+                            updateGridMatrix(xSections, ySections);
+                        }}
                     />
                     <div className="flex justify-between text-xs">
                         <span>1 mm</span>
@@ -52,9 +64,10 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
                         max={500}
                         min={2}
                         step={1}
-                        onValueChange={(value) =>
-                            setParams({ depth: value[0] })
-                        }
+                        onValueChange={(value) => {
+                            setParams({ depth: value[0] });
+                            updateGridMatrix(xSections, ySections);
+                        }}
                     />
                     <div className="flex justify-between text-xs">
                         <span>1 mm</span>
@@ -105,9 +118,10 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
                         max={10}
                         min={2}
                         step={1}
-                        onValueChange={(value) =>
-                            setParams({ xSections: value[0] })
-                        }
+                        onValueChange={(value) => {
+                            setParams({ xSections: value[0] });
+                            updateGridMatrix(value[0], ySections);
+                        }}
                     />
                     <div className="flex justify-between text-xs">
                         <span>2</span>
@@ -122,9 +136,10 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
                         max={10}
                         min={2}
                         step={1}
-                        onValueChange={(value) =>
-                            setParams({ ySections: value[0] })
-                        }
+                        onValueChange={(value) => {
+                            setParams({ ySections: value[0] });
+                            updateGridMatrix(xSections, value[0]);
+                        }}
                     />
                     <div className="flex justify-between text-xs">
                         <span>2</span>

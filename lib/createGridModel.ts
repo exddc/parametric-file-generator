@@ -8,27 +8,9 @@ export const createGridModel = (
     xSections: number,
     ySections: number,
     wallThickness: number,
-    color: string
+    color: string,
+    gridMatrix: [number, number][][]
 ) => {
-    type SectionLength = [number, number];
-    type GridMatrix = SectionLength[][];
-
-    let matrix: GridMatrix = [];
-
-    for (let i = 0; i < xSections; i++) {
-        let row: SectionLength[] = [];
-        for (let j = 0; j < ySections; j++) {
-            let x = width / xSections;
-            let y = depth / ySections;
-            row.push([x, y]);
-        }
-        matrix.push(row);
-    }
-
-    console.log(matrix);
-
-
-
     const material = new THREE.MeshStandardMaterial({
         color,
         roughness: 1,
@@ -37,9 +19,9 @@ export const createGridModel = (
     const lineMaterial = new THREE.LineBasicMaterial({ color: 0x606060 });
 
 
-    for (let i = 0; i < matrix.length; i++) {
-        for (let j = 0; j < matrix[i].length; j++) {
-            const [sectionWidth, sectionDepth] = matrix[i][j];
+    for (let i = 0; i < gridMatrix.length; i++) {
+        for (let j = 0; j < gridMatrix[i].length; j++) {
+            const [sectionWidth, sectionDepth] = gridMatrix[i][j];
 
             if(i > 0){
                 // Create vertical bars (X-axis)
@@ -56,7 +38,7 @@ export const createGridModel = (
             }
             
 
-            if(j < matrix[i].length - 1){
+            if(j < gridMatrix[i].length - 1){
                 // Create horizontal bars (Z-axis)
                 const horizontalGeometry = new THREE.BoxGeometry(sectionWidth - wallThickness, height, wallThickness);
                 const horizontalBar = new THREE.Mesh(horizontalGeometry, material);
