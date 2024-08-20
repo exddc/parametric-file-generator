@@ -5,6 +5,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { createGridMatrix } from '@/lib/createGridMatrix';
+import { useState } from 'react';
 
 const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
     const {
@@ -16,7 +17,10 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
         wallThickness,
         color,
         setParams,
+        gridMatrix,
     } = useStore();
+
+    const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
 
     const updateGridMatrix = (newXSections: number, newYSections: number) => {
         const newGridMatrix = createGridMatrix(
@@ -25,6 +29,21 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
             width,
             depth
         );
+        setParams({ gridMatrix: newGridMatrix });
+    };
+
+    const handleSectionLengthChange = (
+        rowIndex: number,
+        colIndex: number,
+        value: number
+    ) => {
+        const newGridMatrix = [...gridMatrix];
+
+        let sectionChange = value - newGridMatrix[rowIndex][colIndex][1];
+
+        newGridMatrix[rowIndex][colIndex][1] = value;
+        newGridMatrix[rowIndex][colIndex + 1][1] -= sectionChange;
+
         setParams({ gridMatrix: newGridMatrix });
     };
 
@@ -146,6 +165,59 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
                         <span>10</span>
                     </div>
                 </div>
+                <div className="grid grid-cols-1 gap-2">
+                    <Label htmlFor="columnSelector">Select Column</Label>
+                    <select
+                        id="columnSelector"
+                        value={selectedColumn ?? ''}
+                        onChange={(e) =>
+                            setSelectedColumn(
+                                e.target.value !== ''
+                                    ? Number(e.target.value)
+                                    : null
+                            )
+                        }
+                    >
+                        <option value="">None</option>
+                        {Array.from({ length: ySections }, (_, index) => (
+                            <option key={index} value={index}>
+                                Column {index + 1}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                {selectedColumn !== null && (
+                    <div className="mt-4">
+                        <Label>
+                            Adjust Sections in Column {selectedColumn + 1}:
+                        </Label>
+                        {gridMatrix[selectedColumn].map((section, colIndex) => (
+                            <div key={colIndex} className="mt-2">
+                                <Label>
+                                    Section {colIndex + 1}:{' '}
+                                    {section[1].toFixed(2)} mm
+                                </Label>
+                                <Slider
+                                    value={[section[1]]}
+                                    max={depth}
+                                    min={1}
+                                    step={1}
+                                    onValueChange={(value) =>
+                                        handleSectionLengthChange(
+                                            selectedColumn,
+                                            colIndex,
+                                            value[0]
+                                        )
+                                    }
+                                />
+                                <div className="flex justify-between text-xs">
+                                    <span>1 mm</span>
+                                    <span>{depth} mm</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
                 <div>
                     <Label className="block mb-2">Color</Label>
                     <SketchPicker
