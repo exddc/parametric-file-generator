@@ -18,8 +18,35 @@ export const createGridModel = (
     });
     const lineMaterial = new THREE.LineBasicMaterial({ color: 0x606060 });
 
-
+    console.log("GridMatrix: ", gridMatrix);
+    let prevoiusWidth = 0;
+    
     for (let i = 0; i < gridMatrix.length; i++) {
+        let prevoiusDepth = 0;
+        if (i > 0) {
+        prevoiusWidth += gridMatrix[i - 1][0][0];
+        for (let j = 0; j < gridMatrix[i].length; j++) {
+                prevoiusDepth += gridMatrix[i][j][1];
+                console.log(prevoiusWidth, prevoiusDepth);
+                const verticalGeometry = new THREE.BoxGeometry(wallThickness, height, gridMatrix[i][0][1] - wallThickness);
+                const verticalBar = new THREE.Mesh(verticalGeometry, new THREE.MeshStandardMaterial({ color: 0xC83535, roughness: 1, metalness: 1 }));
+                verticalBar.position.x = prevoiusWidth;
+                verticalBar.position.z = prevoiusDepth;
+                gridGroup.add(verticalBar);
+
+                console.log(verticalBar.position);
+
+                const horizontalGeometry = new THREE.BoxGeometry(gridMatrix[i][0][0] - wallThickness, height, wallThickness);
+                const horizontalBar = new THREE.Mesh(horizontalGeometry, material);
+                horizontalBar.position.x = prevoiusDepth - gridMatrix[i][0][0] / 2;
+                horizontalBar.position.z = prevoiusWidth + gridMatrix[i][0][1] / 2;
+                gridGroup.add(horizontalBar);
+            }
+        }
+    }
+
+
+    /* for (let i = 0; i < gridMatrix.length; i++) {
         for (let j = 0; j < gridMatrix[i].length; j++) {
             const [sectionWidth, sectionDepth] = gridMatrix[i][j];
 
@@ -50,5 +77,5 @@ export const createGridModel = (
     }
 
     gridGroup.position.x = -width / 2;
-    gridGroup.position.z = -depth / 2;
+    gridGroup.position.z = -depth / 2; */
 };

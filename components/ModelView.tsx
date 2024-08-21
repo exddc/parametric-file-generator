@@ -98,7 +98,7 @@ const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
                 );
             }
 
-            createDrawerModel(drawerRef.current, width, height, depth);
+            //createDrawerModel(drawerRef.current, width, height, depth);
         }
     }, [
         width,
