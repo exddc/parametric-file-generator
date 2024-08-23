@@ -39,46 +39,42 @@ export const createGridModel = (
 
     // Create outside walls
     if(generateOuterWalls){
-        gridGroup.add(createBar(wallThickness, width, height, -depth / 2  + wallThickness / 2, 0, 0, material));
-        gridGroup.add(createBar(wallThickness, width, height, depth / 2 - wallThickness / 2, 0, 0, material));
-        gridGroup.add(createBar(depth, wallThickness, height, 0, -width/2 + wallThickness / 2, 0, material));
-        gridGroup.add(createBar(depth, wallThickness, height, 0, width/2 - wallThickness / 2, 0, material));
+        gridGroup.add(createBar(wallThickness, depth, height, -width / 2  + wallThickness / 2, 0, 0, material));
+        gridGroup.add(createBar(wallThickness, depth, height, width / 2 - wallThickness / 2, 0, 0, material));
+        gridGroup.add(createBar(width, wallThickness, height, 0, -depth/2 + wallThickness / 2, 0, material));
+        gridGroup.add(createBar(width, wallThickness, height, 0, depth/2 - wallThickness / 2, 0, material));
 
-        gridGroup.add(createEdge(wallThickness, width, height, -depth / 2 + wallThickness / 2, 0, 0, lineMaterial));
-        gridGroup.add(createEdge(wallThickness, width, height, depth / 2 - wallThickness / 2, 0, 0, lineMaterial));
-        gridGroup.add(createEdge(depth, wallThickness, height, 0, -width/2 + wallThickness / 2, 0, lineMaterial));
-        gridGroup.add(createEdge(depth, wallThickness, height, 0, width/2 - wallThickness / 2, 0, lineMaterial));
+        gridGroup.add(createEdge(wallThickness, depth, height, -width / 2 + wallThickness / 2, 0, 0, lineMaterial));
+        gridGroup.add(createEdge(wallThickness, depth, height, width / 2 - wallThickness / 2, 0, 0, lineMaterial));
+        gridGroup.add(createEdge(width, wallThickness, height, 0, -depth/2 + wallThickness / 2, 0, lineMaterial));
+        gridGroup.add(createEdge(width, wallThickness, height, 0, depth/2 - wallThickness / 2, 0, lineMaterial));
     }
 
     // Create inside walls
+    let previousSectionsTotalWidth = 0;
     for (let i = 0; i < gridMatrix.length; i++) {
-        let previousSectionsTotalWidth = 0;
+        
         for (let j = 0; j < gridMatrix[i].length; j++) {
-            const [sectionDepth, sectionWidth] = gridMatrix[i][j];
-            
+            const [sectionWidth, sectionDepth] = gridMatrix[i][j];
+
             // Get the total depth of the previous sections the same column
             let previousSectionsTotalDepth = 0;
-            for(let k = 0; k < i; k++){
-                previousSectionsTotalDepth += gridMatrix[k][j][0];
+            for(let k = 0; k < j; k++){
+                previousSectionsTotalDepth += gridMatrix[i][k][1];
             }
 
-            previousSectionsTotalWidth += sectionWidth;
-
-            // Center the grid
-            let depthOffset = depth / 2 - previousSectionsTotalDepth;
-            let widthOffset = width / 2 - previousSectionsTotalWidth;
-
-            // Create depth bars (X-axis)
-            if(j < gridMatrix[i].length - 1){
-                gridGroup.add(createBar(sectionDepth, wallThickness, height, depthOffset - sectionDepth/2, widthOffset, 0, material));
-                gridGroup.add(createEdge(sectionDepth, wallThickness, height, depthOffset - sectionDepth/2, widthOffset, 0, lineMaterial));
+            // Create depth bars
+            if (i < gridMatrix.length - 1) {
+                gridGroup.add(createBar(wallThickness, sectionDepth, height, width / 2 - sectionWidth - previousSectionsTotalWidth, depth/2 - sectionDepth / 2 - previousSectionsTotalDepth, 0, material));
+                gridGroup.add(createEdge(wallThickness, sectionDepth, height, width / 2 - sectionWidth - previousSectionsTotalWidth, depth/2 - sectionDepth / 2 - previousSectionsTotalDepth, 0, lineMaterial));
             }
 
-            // Create width bars (Z-axis)
-            if(i > 0){
-                gridGroup.add(createBar(wallThickness, sectionWidth, height, depthOffset, widthOffset + sectionWidth/2, 0, material));
-                gridGroup.add(createEdge(wallThickness, sectionWidth, height, depthOffset, widthOffset + sectionWidth/2, 0, lineMaterial));
+            // Create width bars
+            if (j < gridMatrix[i].length - 1) {
+                gridGroup.add(createBar(sectionWidth, wallThickness, height, width / 2 - sectionWidth / 2 - previousSectionsTotalWidth, depth / 2 - sectionDepth - previousSectionsTotalDepth, 0, material));
+                gridGroup.add(createEdge(sectionWidth, wallThickness, height, width / 2 - sectionWidth / 2 - previousSectionsTotalWidth, depth / 2 - sectionDepth - previousSectionsTotalDepth , 0, lineMaterial));
             }
         }
+        previousSectionsTotalWidth += gridMatrix[i][0][0];
     }
 };
