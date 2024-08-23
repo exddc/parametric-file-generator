@@ -6,6 +6,13 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { createGridMatrix } from '@/lib/createGridMatrix';
 import { useState } from 'react';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
     const {
@@ -18,10 +25,14 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
         color,
         setParams,
         gridMatrix,
+        showDrawer,
+        generateOuterWalls,
     } = useStore();
 
     const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
     const [selectedRow, setSelectedRow] = useState<number | null>(null);
+    const [sectionChangesOccured, setSectionChangesOccured] = useState(false);
+    const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false);
 
     const updateGridMatrix = (newXSections: number, newYSections: number) => {
         const newGridMatrix = createGridMatrix(
@@ -50,10 +61,16 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
         }
 
         setParams({ gridMatrix: newGridMatrix });
+        setSectionChangesOccured(true);
+    };
+
+    const resetModel = () => {
+        updateGridMatrix(xSections, ySections);
+        setSectionChangesOccured(false);
     };
 
     return (
-        <div className="col-span-1 p-5 overflow-auto">
+        <div className="col-span-1 pt-5 pl-5 overflow-auto">
             <h1 className="font-bold text-lg">
                 Parametric Drawer Inserts Generator
             </h1>
@@ -61,7 +78,7 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
                 Adjust the drawer dimensions and grid spacing using the sliders.
                 Click the download button to export the STL file.
             </p>
-            <ScrollArea className="h-[90vh]">
+            <ScrollArea className="h-[90vh] pr-5">
                 <div className="grid grid-cols-1 gap-2 mt-8 pb-8">
                     <h2 className="font-bold">General Parameters</h2>
 
@@ -178,88 +195,142 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
                                 <span>10</span>
                             </div>
                         </div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-2 mt-8">
-                        <h2 className="font-bold">Advanced Parameters</h2>
-                        <div className="grid grid-cols-1 gap-2">
-                            <Label htmlFor="columnSelector">
-                                Select Column
+                        <div className="flex flex-row justify-between">
+                            <Label htmlFor="showDrawer">
+                                Show Drawer in Model
                             </Label>
-                            <select
-                                id="columnSelector"
-                                value={selectedColumn ?? ''}
-                                onChange={(e) =>
-                                    setSelectedColumn(
-                                        e.target.value !== ''
-                                            ? Number(e.target.value)
-                                            : null
-                                    )
-                                }
-                            >
-                                <option value="">None</option>
-                                {Array.from(
-                                    { length: ySections },
-                                    (_, index) => (
-                                        <option key={index} value={index}>
-                                            Column {index + 1}
-                                        </option>
-                                    )
-                                )}
-                            </select>
-
-                            {selectedColumn !== null ? (
-                                <div className="">
-                                    <Label>
-                                        Adjust Sections in Column{' '}
-                                        {selectedColumn + 1}:
-                                    </Label>
-                                    {gridMatrix[selectedColumn].map(
-                                        (section, colIndex) => (
-                                            <div
-                                                key={colIndex}
-                                                className="mt-2"
-                                            >
-                                                <Label>
-                                                    Section {colIndex + 1}:{' '}
-                                                    {section[1].toFixed(2)} mm
-                                                </Label>
-                                                <Slider
-                                                    value={[section[1]]}
-                                                    max={depth}
-                                                    min={1}
-                                                    step={1}
-                                                    onValueChange={(value) =>
-                                                        handleSectionLengthChange(
-                                                            selectedColumn,
-                                                            colIndex,
-                                                            value[0]
-                                                        )
-                                                    }
-                                                />
-                                                <div className="flex justify-between text-xs">
-                                                    <span>1 mm</span>
-                                                    <span>{depth} mm</span>
-                                                </div>
-                                            </div>
-                                        )
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="hidden"></div>
-                            )}
+                            <Checkbox
+                                id="showDrawer"
+                                className="ml-auto"
+                                checked={showDrawer}
+                                onCheckedChange={() => {
+                                    setParams({ showDrawer: !showDrawer });
+                                }}
+                            />
                         </div>
-                        <div className="grid grid-cols-1 gap-2 mt-2">
-                            <Label>Color</Label>
-                            <SketchPicker
-                                color={color}
-                                onChangeComplete={(color) =>
-                                    setParams({ color: color.hex })
-                                }
-                                className="mx-auto"
+                        <div className="flex flex-row justify-between">
+                            <Label htmlFor="generateOuterWalls">
+                                Generate Outer Walls
+                            </Label>
+                            <Checkbox
+                                id="generateOuterWalls"
+                                className="ml-auto"
+                                checked={generateOuterWalls}
+                                onCheckedChange={() => {
+                                    setParams({
+                                        generateOuterWalls: !generateOuterWalls,
+                                    });
+                                }}
                             />
                         </div>
                     </div>
-                    <Button onClick={exportSTL}>Download STL</Button>
+                    <Collapsible
+                        open={advancedSectionOpen}
+                        onOpenChange={setAdvancedSectionOpen}
+                        className="grid grid-cols-1 gap-2 mt-8"
+                    >
+                        <CollapsibleTrigger className="font-bold text-left justify-between flex items-center">
+                            <span>Advanced Parameters</span>
+                            {advancedSectionOpen ? (
+                                <ChevronUpIcon />
+                            ) : (
+                                <ChevronDownIcon />
+                            )}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <div className="grid grid-cols-1 gap-2 mt-2">
+                                <Label htmlFor="columnSelector">
+                                    Select Column
+                                </Label>
+                                <select
+                                    id="columnSelector"
+                                    value={selectedColumn ?? ''}
+                                    onChange={(e) =>
+                                        setSelectedColumn(
+                                            e.target.value !== ''
+                                                ? Number(e.target.value)
+                                                : null
+                                        )
+                                    }
+                                >
+                                    <option value="">None</option>
+                                    {Array.from(
+                                        { length: ySections },
+                                        (_, index) => (
+                                            <option key={index} value={index}>
+                                                Column {index + 1}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+
+                                {selectedColumn !== null ? (
+                                    <div className="">
+                                        <Label>
+                                            Adjust Sections in Column{' '}
+                                            {selectedColumn + 1}:
+                                        </Label>
+                                        {gridMatrix[selectedColumn].map(
+                                            (section, colIndex) => (
+                                                <div
+                                                    key={colIndex}
+                                                    className="mt-2"
+                                                >
+                                                    <Label>
+                                                        Section {colIndex + 1}:{' '}
+                                                        {section[1].toFixed(2)}{' '}
+                                                        mm
+                                                    </Label>
+                                                    <Slider
+                                                        value={[section[1]]}
+                                                        max={depth}
+                                                        min={1}
+                                                        step={1}
+                                                        onValueChange={(
+                                                            value
+                                                        ) =>
+                                                            handleSectionLengthChange(
+                                                                selectedColumn,
+                                                                colIndex,
+                                                                value[0]
+                                                            )
+                                                        }
+                                                    />
+                                                    <div className="flex justify-between text-xs">
+                                                        <span>1 mm</span>
+                                                        <span>{depth} mm</span>
+                                                    </div>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="hidden"></div>
+                                )}
+                            </div>
+                            <div className="grid grid-cols-1 gap-2 mt-2">
+                                <Label>Color</Label>
+                                <SketchPicker
+                                    color={color}
+                                    onChangeComplete={(color) =>
+                                        setParams({ color: color.hex })
+                                    }
+                                    className="mx-auto"
+                                />
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+                    <div className="mt-8 grid grid-cols-1 gap-3">
+                        {sectionChangesOccured && (
+                            <Button
+                                variant={'destructive'}
+                                onClick={resetModel}
+                            >
+                                Reset Model
+                            </Button>
+                        )}
+                        <Button onClick={exportSTL}>Download STL</Button>
+                    </div>
                 </div>
             </ScrollArea>
         </div>

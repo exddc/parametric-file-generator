@@ -9,7 +9,8 @@ export const createGridModel = (
     ySections: number,
     wallThickness: number,
     color: string,
-    gridMatrix: [number, number][][]
+    gridMatrix: [number, number][][],
+    generateOuterWalls: boolean
 ) => {
     const material = new THREE.MeshStandardMaterial({
         color,
@@ -37,15 +38,17 @@ export const createGridModel = (
     }
 
     // Create outside walls
-    gridGroup.add(createBar(wallThickness, width + wallThickness, height, -depth / 2, 0, 0, material));
-    gridGroup.add(createBar(wallThickness, width + wallThickness, height, depth / 2, 0, 0, material));
-    gridGroup.add(createBar(depth + wallThickness, wallThickness, height, 0, -width/2, 0, material));
-    gridGroup.add(createBar(depth + wallThickness, wallThickness, height, 0, width/2, 0, material));
+    if(generateOuterWalls){
+        gridGroup.add(createBar(wallThickness, width, height, -depth / 2  + wallThickness / 2, 0, 0, material));
+        gridGroup.add(createBar(wallThickness, width, height, depth / 2 - wallThickness / 2, 0, 0, material));
+        gridGroup.add(createBar(depth, wallThickness, height, 0, -width/2 + wallThickness / 2, 0, material));
+        gridGroup.add(createBar(depth, wallThickness, height, 0, width/2 - wallThickness / 2, 0, material));
 
-    gridGroup.add(createEdge(wallThickness, width + wallThickness, height, -depth / 2, 0, 0, lineMaterial));
-    gridGroup.add(createEdge(wallThickness, width + wallThickness, height, depth / 2, 0, 0, lineMaterial));
-    gridGroup.add(createEdge(depth + wallThickness, wallThickness, height, 0, -width/2, 0, lineMaterial));
-    gridGroup.add(createEdge(depth + wallThickness, wallThickness, height, 0, width/2, 0, lineMaterial));
+        gridGroup.add(createEdge(wallThickness, width, height, -depth / 2 + wallThickness / 2, 0, 0, lineMaterial));
+        gridGroup.add(createEdge(wallThickness, width, height, depth / 2 - wallThickness / 2, 0, 0, lineMaterial));
+        gridGroup.add(createEdge(depth, wallThickness, height, 0, -width/2 + wallThickness / 2, 0, lineMaterial));
+        gridGroup.add(createEdge(depth, wallThickness, height, 0, width/2 - wallThickness / 2, 0, lineMaterial));
+    }
 
     // Create inside walls
     for (let i = 0; i < gridMatrix.length; i++) {

@@ -23,6 +23,8 @@ const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
         wallThickness,
         color,
         gridMatrix,
+        showDrawer,
+        generateOuterWalls,
     } = useStore();
 
     const drawerRef = useRef<THREE.Group>(new THREE.Group());
@@ -94,11 +96,14 @@ const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
                     ySections,
                     wallThickness,
                     color,
-                    gridMatrix
+                    gridMatrix,
+                    generateOuterWalls
                 );
             }
 
-            createDrawerModel(drawerRef.current, width, height, depth);
+            if (showDrawer) {
+                createDrawerModel(drawerRef.current, width, height, depth);
+            }
         }
     }, [
         width,
@@ -109,6 +114,8 @@ const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
         wallThickness,
         color,
         gridMatrix,
+        showDrawer,
+        generateOuterWalls,
     ]);
 
     return <div ref={mountRef} />;

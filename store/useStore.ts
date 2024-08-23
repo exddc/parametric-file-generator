@@ -11,6 +11,8 @@ interface DrawerParams {
   color: string;
   setParams: (params: Partial<DrawerParams>) => void;
   gridMatrix: [number, number][][];
+  showDrawer: boolean;
+  generateOuterWalls: boolean;
 }
 
 const useStore = create<DrawerParams>((set) => ({
@@ -23,6 +25,8 @@ const useStore = create<DrawerParams>((set) => ({
     color: '#666161',
     gridMatrix: createGridMatrix(3, 3, 100, 100),
     setParams: (params) => set((state) => ({ ...state, ...params })),
+    showDrawer: true,
+    generateOuterWalls: true,
 }));
   
 
