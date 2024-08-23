@@ -1,4 +1,5 @@
 import {create} from 'zustand';
+import { createGridMatrix } from '@/lib/createGridMatrix';
 
 interface DrawerParams {
   width: number;
@@ -9,17 +10,24 @@ interface DrawerParams {
   wallThickness: number;
   color: string;
   setParams: (params: Partial<DrawerParams>) => void;
+  gridMatrix: [number, number][][];
+  showDrawer: boolean;
+  generateOuterWalls: boolean;
 }
 
 const useStore = create<DrawerParams>((set) => ({
-  width: 100,
-  height: 10,
-  depth: 100,
-  xSections: 2,
-  ySections: 2,
-  wallThickness: 1,
-  color: '#666161',
-  setParams: (params) => set((state) => ({ ...state, ...params })),
+    width: 100,
+    height: 10,
+    depth: 100,
+    xSections: 3,
+    ySections: 3,
+    wallThickness: 1,
+    color: '#666161',
+    gridMatrix: createGridMatrix(3, 3, 100, 100),
+    setParams: (params) => set((state) => ({ ...state, ...params })),
+    showDrawer: true,
+    generateOuterWalls: true,
 }));
+  
 
 export default useStore;

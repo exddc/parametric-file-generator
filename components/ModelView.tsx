@@ -14,8 +14,18 @@ interface ModelViewProps {
 
 const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
     const mountRef = useRef<HTMLDivElement | null>(null);
-    const { width, height, depth, xSections, ySections, wallThickness, color } =
-        useStore();
+    const {
+        width,
+        height,
+        depth,
+        xSections,
+        ySections,
+        wallThickness,
+        color,
+        gridMatrix,
+        showDrawer,
+        generateOuterWalls,
+    } = useStore();
 
     const drawerRef = useRef<THREE.Group>(new THREE.Group());
     const sceneRef = useRef<THREE.Scene>(new THREE.Scene());
@@ -76,20 +86,37 @@ const ModelView: React.FC<ModelViewProps> = ({ gridRef }) => {
             gridRef.current.clear();
             drawerRef.current.clear();
 
-            createGridModel(
-                gridRef.current,
-                width,
-                height,
-                depth,
-                xSections,
-                ySections,
-                wallThickness,
-                color
-            );
+            if (gridMatrix && gridMatrix.length > 0) {
+                createGridModel(
+                    gridRef.current,
+                    width,
+                    height,
+                    depth,
+                    xSections,
+                    ySections,
+                    wallThickness,
+                    color,
+                    gridMatrix,
+                    generateOuterWalls
+                );
+            }
 
-            createDrawerModel(drawerRef.current, width, height, depth);
+            if (showDrawer) {
+                createDrawerModel(drawerRef.current, width, height, depth);
+            }
         }
-    }, [width, height, depth, xSections, ySections, wallThickness, color]);
+    }, [
+        width,
+        height,
+        depth,
+        xSections,
+        ySections,
+        wallThickness,
+        color,
+        gridMatrix,
+        showDrawer,
+        generateOuterWalls,
+    ]);
 
     return <div ref={mountRef} />;
 };
