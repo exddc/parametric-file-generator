@@ -20,7 +20,7 @@ export const createDrawerModel = (
         depth + drawerThickness
     );
     const bottom = new THREE.Mesh(bottomGeometry, drawerMaterial);
-    bottom.position.y = -height + drawerThickness / 2;
+    bottom.position.y = -height / 2 - drawerThickness / 2;
     bottom.position.z = -drawerThickness / 2;
     drawerGroup.add(bottom);
 
