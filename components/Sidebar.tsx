@@ -84,15 +84,15 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
 
                     <div className="grid grid-cols-1 gap-5">
                         <div className="grid grid-cols-1 gap-2">
-                            <Label htmlFor="width">Width: {width} mm</Label>
+                            <Label htmlFor="depth">Width: {depth} mm</Label>
                             <Slider
-                                id="width"
-                                value={[width]}
+                                id="depth"
+                                value={[depth]}
                                 max={500}
                                 min={2}
                                 step={1}
                                 onValueChange={(value) => {
-                                    setParams({ width: value[0] });
+                                    setParams({ depth: value[0] });
                                     updateGridMatrix(xSections, ySections);
                                 }}
                             />
@@ -102,15 +102,15 @@ const Sidebar = ({ exportSTL }: { exportSTL: () => void }) => {
                             </div>
                         </div>
                         <div className="grid grid-cols-1 gap-2">
-                            <Label htmlFor="depth">Depth: {depth} mm</Label>
+                            <Label htmlFor="width">Depth: {width} mm</Label>
                             <Slider
-                                id="depth"
-                                value={[depth]}
+                                id="width"
+                                value={[width]}
                                 max={500}
                                 min={2}
                                 step={1}
                                 onValueChange={(value) => {
-                                    setParams({ depth: value[0] });
+                                    setParams({ width: value[0] });
                                     updateGridMatrix(xSections, ySections);
                                 }}
                             />
