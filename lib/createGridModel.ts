@@ -42,14 +42,45 @@ export const createGridModel = (
         return mesh;
     }
 
-
     // Create outside walls
-    gridGroup.add(createBar(wallThickness, width, height, -depth / 2, 0, 0, material_red));
-    gridGroup.add(createBar(wallThickness, width, height, depth / 2, 0, 0, material_green));
-    gridGroup.add(createBar(depth, wallThickness, height, 0, -width/2, 0, material_blue));
-    gridGroup.add(createBar(depth, wallThickness, height, 0, width/2, 0, material));
+    gridGroup.add(createBar(wallThickness, width + wallThickness, height, -depth / 2, 0, 0, material_red));
+    gridGroup.add(createBar(wallThickness, width + wallThickness, height, depth / 2, 0, 0, material_red));
+    gridGroup.add(createBar(depth + wallThickness, wallThickness, height, 0, -width/2, 0, material_blue));
+    gridGroup.add(createBar(depth + wallThickness, wallThickness, height, 0, width/2, 0, material_blue));
 
+    // Create inside walls
+    for (let i = 0; i < gridMatrix.length; i++) {
+        let previousSectionsTotalWidth = 0;
+        for (let j = 0; j < gridMatrix[i].length; j++) {
+            const [sectionDepth, sectionWidth] = gridMatrix[i][j];
+            console.log("i: " + i + " j: " + j + " sectionWidth: " + sectionWidth + " sectionDepth: " + sectionDepth);
+            
+            // Get the total depth of the previous sections the same column
+            let previousSectionsTotalDepth = 0;
+            for(let k = 0; k < i; k++){
+                previousSectionsTotalDepth += gridMatrix[k][j][0];
+            }
+            console.log(previousSectionsTotalDepth);
 
+            previousSectionsTotalWidth += sectionWidth;
+
+            // Center the grid
+            let depthOffset = depth / 2 - previousSectionsTotalDepth;
+            let widthOffset = width / 2 - previousSectionsTotalWidth;
+
+            console.log("depthOffset: " + depthOffset + " widthOffset: " + widthOffset);
+
+            // Create depth bars (X-axis)
+            if(j < gridMatrix[i].length - 1){
+                gridGroup.add(createBar(sectionDepth, wallThickness, height, depthOffset - sectionDepth/2, widthOffset, 0, material_green));
+            }
+
+            // Create width bars (Z-axis)
+            if(i > 0){
+                gridGroup.add(createBar(wallThickness, sectionWidth, height, depthOffset, widthOffset + sectionWidth/2, 0, material));
+            }
+        }
+    }
 
 
 
